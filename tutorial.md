@@ -9,7 +9,7 @@
 普通网卡的工作过程如下：先把收到的数据包缓存到系统上，数据包经过处理后，相应数据被分配到一个TCP连接。然后，接收系统再把主动提供的TCP数据同相应的应用程序联系起来，并将数据从系统缓冲区拷贝到目标存储地址。这样，制约网络速率的因素就出现了：应用通信强度不断增加和主机CPU 在内核与应用存储器间处理数据的任务繁重，使系统要不断追加主机CPU 资源，配置高效的软件并增强系统负荷管理。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/软件协议栈.png">
+    <img src="./image/软件协议栈.png">
 </div>
 
 新型的网络技术替代了传统的TCP/IP软件协议栈的设计，核心技术就是RDMA，全称是远程直接内存访问，实现了kernel bypass技术，数据不需要经过软件协议栈，并且不需要CPU参与寻址、解析等操作，从而提供低延时、高带宽、低CPU使用的性能优势：
@@ -22,7 +22,7 @@
 如图2所示，从RDMA的宏观传输图中，我们可以看到，数据直接从用户态发送给网卡，再由网卡中的协议栈进行转发到达目标端用户态内存，整个过程完全旁路了内核，不需要用户态到内核态的数据拷贝，降低了延时，同时不经过软件协议栈，也就不需要CPU参与寻址等操作，较少了CPU的使用。在这个过程中，RNIC是最重要的一个设备，那么接下来先介绍RNIC。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA宏观传输图.png">
+    <img src="./image/RDMA宏观传输图.png">
 </div>
 
 ### 1.2 RNIC
@@ -36,13 +36,13 @@ CQ：Completion Queue，完成队列，当发送请求或接收请求完成时�
 各个队列的具体工作流程会在下面介绍RDMA编程时详细介绍。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RNIC组成.png">
+    <img src="./image/RNIC组成.png">
 </div>
 
 另外，由于RDMA将协议栈卸载到了网卡中，因此RNIC中也实现了相应的网络协议，以infiniband为例，它的协议栈也是分层的
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA协议栈.png" width = 70%>
+    <img src="./image/RDMA协议栈.png" width = 70%>
 </div>
 
 ## 二、RDMA编程
@@ -55,7 +55,7 @@ client：sudo ib_send_lat 10.128.16.214 -F -s 10 -n 1000
 ```
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/perftest结果.png" width = 70%>
+    <img src="./image/perftest结果.png" width = 70%>
 </div>
 
 这个例子可以看到10B大小的数据包延时在1.5us左右，后续去分析perftest的源码的话，就会涉及到RDMA编程的细节。
@@ -74,7 +74,7 @@ client：sudo ib_send_lat 10.128.16.214 -F -s 10 -n 1000
 上述文字描述过程看上去很简单，和socket编程差不多，但是由于RDMA编程库的封装性不强以及在整个传输过程中涉及大量的参数选择，RDMA编程其实极为复杂。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA send微观传输图.jpg">
+    <img src="./image/RDMA send微观传输图.jpg">
 </div>
 
 ### 2.2 RDMA参数
@@ -90,7 +90,7 @@ client：sudo ib_send_lat 10.128.16.214 -F -s 10 -n 1000
 在了解了RDMA各种参数后，接下来将介绍具体的RDMA编程中，这些参数是如何体现的（在具体参数选择出会用黄色背景标注出）。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA传输参数图.png">
+    <img src="./image/RDMA传输参数图.png">
 </div>
 
 ### 2.3 send/recv
@@ -231,7 +231,7 @@ ibv_post_send(conn->qp, &wr, &bad_wr);
 ```
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA write微观传输图.jpg">
+    <img src="./image/RDMA write微观传输图.jpg">
 </div>
 
 ### 2.5 code example
@@ -249,11 +249,11 @@ ibv_post_send(conn->qp, &wr, &bad_wr);
 以send/recv为例比较inline/non-inline参数对延时性能的影响：
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/配置-inline.png" width = 70%>
+    <img src="./image/配置-inline.png" width = 70%>
 </div>
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/实验结果-inline.png" width = 70%>
+    <img src="./image/实验结果-inline.png" width = 70%>
 </div>
 
 #### 2.6.2 verb
@@ -261,11 +261,11 @@ ibv_post_send(conn->qp, &wr, &bad_wr);
 以write和read为例比较verb参数对延时性能的影响：
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/配置-verb.png" width = 70%>
+    <img src="./image/配置-verb.png" width = 70%>
 </div>
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/实验结果-verb.png" width = 70%>
+    <img src="./image/实验结果-verb.png" width = 70%>
 </div>
 
 #### 2.6.2 poll strategy
@@ -273,11 +273,11 @@ ibv_post_send(conn->qp, &wr, &bad_wr);
 以send/recv为例比较poll参数对延时性能的影响：
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/配置-poll.png" width = 70%>
+    <img src="./image/配置-poll.png" width = 70%>
 </div>
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/实验结果-poll.png" width = 70%>
+    <img src="./image/实验结果-poll.png" width = 70%>
 </div>
 
 ### 2.7 RDMA与应用的结合
@@ -291,13 +291,13 @@ ibv_post_send(conn->qp, &wr, &bad_wr);
 需要注意的是在将RDMA与应用结合的同时，我们要考虑到如何充分利用RDMA的性能，也就是如何选择上述介绍的RDMA参数。大量单纯在工程上修改应用的工作只是将普遍认为的高性能的RDMA参数运用到应用通信框架中，比如利用one-sided的verb传输数据，利用busy polling获取完成通知。但是这种方式却忽略了应用自己的特性以及服务器的资源状态，具体的RDMA参数选择与不同应用的应用特性以及相关的服务器资源状态有关。
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/RDMA应用部署图.png">
+    <img src="./image/RDMA应用部署图.png">
 </div>
 
 这里以tensorflow框架为例，拿最简单的手写数字识别的模型进行分布式训练，直观的感受一下RDMA对应用性能的提升
 
 <div align=center>
-    <img src="https://github.com/StarryVae/RDMA-tutorial/blob/master/image/tensorflow实验.png" width = 70%>
+    <img src="./image/tensorflow实验.png" width = 70%>
 </div>
 
 ## 三、RDMA相关研究
@@ -339,5 +339,4 @@ RDMA相关的面试经验：https://github.com/StarryVae/RDMA-tutorial/tree/mast
 9.	HPCC: High Precision Congestion Control.
 10.	Multi-Path Transport for RDMA in Datacenters.
 11.	FreeFlow: Software-based Virtual RDMA Networking for Containerized Clouds.
-
 
